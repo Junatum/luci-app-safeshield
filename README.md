@@ -1,10 +1,9 @@
 # SafeShield (luci-app-safeshield)
 
-<p>
-    <a href="https://github.com/Beomjun/luci-app-safeshield/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Beomjun/luci-app-safeshield" alt="License"></a>
-</p>
+![OpenWrt](https://img.shields.io/badge/OpenWrt-Compatible-blue)
+![License](https://img.shields.io/github/license/Beomjun/safeshield?label=License)
 
-A lightweight DNS-based ad blocker for OpenWrt, designed with a powerful, easy-to-use Web UI. Blocks ads and phishing sites, fully compatible with dnsmasq and SmartDNS.
+A lightweight DNS-based ad blocker for OpenWrt, designed with a powerful, easy-to-use Web UI. Blocks ads and phishing sites, fully compatible with dnsmasq.
 
 ## Contributors
 

@@ -1,17 +1,34 @@
 {
-	"admin/services/safeshield": {
-		"title": "SafeShield",
-		"action": {
-			"type": "view",
-			"path": "safeshield/overview"
-		},
-		"depends": {
-			"acl": [
-				"luci-app-safeshield"
-			],
-			"uci": {
-				"safeshield": true
-			}
-		}
-	}
+  "admin/services/safeshield": {
+    "title": "SafeShield",
+    "order": 60,
+    "action": {
+      "type": "firstchild"
+    },
+    "depends": {
+      "acl": [ "luci-app-safeshield" ]
+    }
+  },
+  "admin/services/safeshield/overview": {
+    "title": "Overview",
+    "order": 10,
+    "action": {
+      "type": "view",
+      "path": "safeshield/overview"
+    },
+    "depends": {
+      "acl": [ "luci-app-safeshield" ]
+    }
+  },
+  "admin/services/safeshield/config": {
+    "title": "Settings",
+    "order": 20,
+    "action": {
+      "type": "view",
+      "path": "safeshield/config"
+    },
+    "depends": {
+      "acl": [ "luci-app-safeshield" ]
+    }
+  }
 }

@@ -1,21 +1,14 @@
 {
-	"luci-app-safeshield": {
-		"description": "Grant UCI and file access for luci-app-safeshield",
-		"read": {
-			"file": {
-				"/dev/shm/safeshield": [ "list", "read" ],
-				"/dev/shm/safeshield.status.json": [ "list", "read" ]
-			},
-			"ubus": {
-				"luci.safeshield": []
-			},
-			"uci": ["safeshield", "dhcp", "smartdns"]
-		},
-		"write": {
-			"uci": ["safeshield"],
-			"ubus": {
-				"luci.safeshield": []
-			}
-		}
-	}
+  "luci-app-safeshield": {
+    "description": "Grant access to SafeShield status and configuration",
+    "read": {
+      "ubus": {
+        "safeshield": [ "status" ]
+      },
+      "uci": [ "safeshield" ]
+    },
+    "write": {
+      "uci": [ "safeshield" ]
+    }
+  }
 }

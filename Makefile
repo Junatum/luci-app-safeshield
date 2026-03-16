@@ -6,15 +6,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-safeshield
+PKG_VERSION:=0.1.1
+PKG_RELEASE:=2
+
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_MAINTAINER:=Beomjun Kang <kals323@gmail.com>
-PKG_VERSION:=0.1.0
-PKG_RELEASE:=1
 
 LUCI_TITLE:=SafeShield Web UI
 LUCI_URL:=https://github.com/Beomjun/luci-app-safeshield
-LUCI_DESCRIPTION:=Lightweight, DNS-based protection for OpenWrt — block ads and phishing sites with a powerful Web UI.
-LUCI_DEPENDS:=+luci-base +jsonfilter +safeshield
+LUCI_DESCRIPTION:=SafeShield Web UI for OpenWrt
+LUCI_DEPENDS:=+luci-base +rpcd +ucode +safeshield
+EXTRA_DEPENDS:=safeshield (>= 0.2.3)
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
