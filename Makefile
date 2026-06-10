@@ -13,7 +13,7 @@ PKG_LICENSE:=GPL-3.0-or-later
 PKG_MAINTAINER:=Beomjun Kang <kals323@gmail.com>
 
 LUCI_TITLE:=SafeShield Web UI
-LUCI_URL:=https://github.com/Beomjun/luci-app-safeshield
+LUCI_URL:=https://github.com/Junatum/luci-app-safeshield
 LUCI_DESCRIPTION:=SafeShield Web UI for OpenWrt
 LUCI_DEPENDS:=+luci-base +rpcd +ucode +safeshield
 EXTRA_DEPENDS:=safeshield (>= 0.2.10)
