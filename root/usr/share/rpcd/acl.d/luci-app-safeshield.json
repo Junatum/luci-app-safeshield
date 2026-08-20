@@ -1,14 +1,26 @@
 {
   "luci-app-safeshield": {
-    "description": "Grant access to SafeShield status and configuration",
+    "description": "Grant LuCI access to the public SafeShield management API",
     "read": {
       "ubus": {
-        "safeshield": [ "status" ]
-      },
-      "uci": [ "safeshield" ]
+        "safeshield": [
+          "status",
+          "config",
+          "rules_list"
+        ]
+      }
     },
     "write": {
-      "uci": [ "safeshield" ]
+      "ubus": {
+        "safeshield": [
+          "config_update",
+          "set_enabled",
+          "refresh",
+          "rule_add",
+          "rule_delete",
+          "license_update"
+        ]
+      }
     }
   }
 }
