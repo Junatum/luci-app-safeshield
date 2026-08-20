@@ -20,9 +20,20 @@
       "acl": [ "luci-app-safeshield" ]
     }
   },
+  "admin/services/safeshield/rules": {
+    "title": "Local Rules",
+    "order": 20,
+    "action": {
+      "type": "view",
+      "path": "safeshield/rules"
+    },
+    "depends": {
+      "acl": [ "luci-app-safeshield" ]
+    }
+  },
   "admin/services/safeshield/config": {
     "title": "Settings",
-    "order": 20,
+    "order": 30,
     "action": {
       "type": "view",
       "path": "safeshield/config"

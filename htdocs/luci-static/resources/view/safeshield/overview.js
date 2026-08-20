@@ -2,6 +2,7 @@
 
 'require poll';
 'require rpc';
+'require ui';
 'require view';
 
 var callStatus = rpc.declare({
@@ -9,6 +10,130 @@ var callStatus = rpc.declare({
 	method: 'status',
 	expect: { }
 });
+
+var callSetEnabled = rpc.declare({
+	object: 'safeshield',
+	method: 'set_enabled',
+	params: [ 'enabled' ],
+	expect: { }
+});
+
+var callRefresh = rpc.declare({
+	object: 'safeshield',
+	method: 'refresh',
+	expect: { }
+});
+
+
+function apiError(response, fallback) {
+	if (response && response.error) {
+		if (response.error.message)
+			return response.error.message;
+		if (response.error.code)
+			return response.error.code;
+	}
+
+	return fallback || _('SafeShield request failed.');
+}
+
+function notify(level, message) {
+	ui.addNotification(null, E('p', {}, [ message ]), level || 'info');
+}
+
+function delay(ms) {
+	return new Promise(function(resolve) {
+		window.setTimeout(resolve, ms);
+	});
+}
+
+function enabledStateConverged(status, target) {
+	var runtime = (status && status.runtime) || {};
+
+	if (target)
+		return status && status.enabled === true && status.active === true && runtime.refreshd_running === true;
+
+	return status && status.enabled === false && status.active === false && runtime.refreshd_running === false;
+}
+
+function waitForEnabledState(target, timeoutMs) {
+	var started = Date.now();
+
+	function check() {
+		return callStatus().then(function(status) {
+			if (enabledStateConverged(status, target) || Date.now() - started >= timeoutMs)
+				return status;
+			return delay(500).then(check);
+		});
+	}
+
+	return check();
+}
+
+function renderActions(status, root) {
+	var enabled = status && status.enabled === true;
+	var toggle = E('button', { 'class': 'btn cbi-button cbi-button-action' }, [ enabled ? _('Disable SafeShield') : _('Enable SafeShield') ]);
+	var refresh = E('button', { 'class': 'btn cbi-button cbi-button-positive' }, [ _('Refresh now') ]);
+
+	function replaceStatus(updated) {
+		root.replaceChild(renderStatus(updated, root), root.firstChild);
+	}
+
+	toggle.addEventListener('click', function(ev) {
+		var target = !enabled;
+		ev.preventDefault();
+		toggle.disabled = true;
+
+		callSetEnabled(target).then(function(response) {
+			if (!response || response.ok !== true || response.accepted !== true)
+				throw new Error(apiError(response, _('SafeShield rejected the lifecycle request.')));
+
+			notify('info', target ? _('Enable request accepted.') : _('Disable request accepted.'));
+			return waitForEnabledState(target, 15000);
+		}).then(function(updated) {
+			replaceStatus(updated);
+			if (enabledStateConverged(updated, target))
+				notify('info', target ? _('SafeShield is enabled and running.') : _('SafeShield is disabled and stopped.'));
+			else
+				notify('warning', _('SafeShield accepted the request but runtime convergence was not observed within 15 seconds. Status polling will continue.'));
+		}).catch(function(err) {
+			notify('danger', err.message || String(err));
+		}).finally(function() {
+			toggle.disabled = false;
+		});
+	});
+
+	refresh.disabled = !enabled;
+	refresh.addEventListener('click', function(ev) {
+		ev.preventDefault();
+		refresh.disabled = true;
+
+		callRefresh().then(function(response) {
+			if (!response || response.ok !== true)
+				throw new Error(apiError(response, _('SafeShield refresh request failed.')));
+
+			if (response.accepted)
+				notify('info', _('SafeShield refresh started.'));
+			else if (response.reason === 'already_running')
+				notify('info', _('A SafeShield refresh is already running.'));
+			else
+				notify('warning', _('Refresh was not started: %s').format(response.reason || _('unknown reason')));
+
+			return callStatus();
+		}).then(replaceStatus).catch(function(err) {
+			notify('danger', err.message || String(err));
+		}).finally(function() {
+			refresh.disabled = !enabled;
+		});
+	});
+
+	return E('div', { 'class': 'cbi-section' }, [
+		E('h3', {}, [ _('Actions') ]),
+		E('div', { 'class': 'cbi-section-descr' }, [
+			_('Enable/disable and refresh actions use the public SafeShield ubus API. Enable/disable convergence is asynchronous and is verified through safeshield.status.')
+		]),
+		E('div', {}, [ toggle, ' ', refresh ])
+	]);
+}
 
 function asText(value, fallback) {
 	if (value === null || value === undefined || value === '')
@@ -117,10 +242,18 @@ function badgeClass(value) {
 	case 'refreshing':
 	case 'pending':
 	case 'notice':
+	case 'boot_delay':
+	case 'scheduled_wait':
+	case 'local_apply':
+	case 'local_merge':
+	case 'local_restart_dnsmasq':
+	case 'local_runtime_check':
+	case 'local_blocklist_verify':
 		return 'label notice';
 	case 'warning':
 	case 'warn':
 	case 'degraded':
+	case 'disabled':
 		return 'label warning';
 	case 'error':
 	case 'failed':
@@ -267,7 +400,7 @@ function renderHealth(checks) {
 	}));
 }
 
-function renderStatus(data) {
+function renderStatus(data, root) {
 	var status = data || {};
 	var runtime = status.runtime || {};
 	var license = status.license || {};
@@ -286,6 +419,7 @@ function renderStatus(data) {
 
 	var nodes = [
 		E('h2', {}, [ _('SafeShield') ]),
+		renderActions(status, root),
 
 		section(_('Current status'), [
 			row(_('Status'), badge(status.status)),
@@ -299,7 +433,9 @@ function renderStatus(data) {
 			row(_('Generated at'), formatTimestamp(timestamps.generated_at)),
 			row(_('Last attempt'), formatTimestamp(timestamps.last_attempt)),
 			row(_('Last success'), formatTimestamp(timestamps.last_success)),
-			row(_('Last failure'), formatTimestamp(timestamps.last_failure))
+			row(_('Last failure'), formatTimestamp(timestamps.last_failure)),
+			row(_('Last local apply'), formatTimestamp(timestamps.last_local_apply)),
+			row(_('Last local apply failure'), formatTimestamp(timestamps.last_local_apply_failure))
 		]),
 
 		section(_('Runtime'), [
@@ -322,9 +458,9 @@ function renderStatus(data) {
 		]),
 
 		section(_('Device'), [
-			row(_('Runtime fingerprint'), device.fingerprint),
+			row(_('Physical fingerprint'), device.physical_fingerprint),
 			row(_('Runtime profile'), device.profile),
-			row(_('Configured fingerprint'), deviceConfigured.fingerprint),
+			row(_('Configured physical fingerprint'), deviceConfigured.physical_fingerprint),
 			row(_('Vendor'), deviceConfigured.vendor),
 			row(_('Model'), deviceConfigured.model),
 			row(_('Architecture'), deviceConfigured.arch),
@@ -384,11 +520,13 @@ return view.extend({
 	},
 
 	render: function(data) {
-		var root = E('div', {}, [ renderStatus(data) ]);
+		var root = E('div', {}, []);
+
+		root.appendChild(renderStatus(data, root));
 
 		poll.add(function() {
 			return callStatus().then(function(updated) {
-				root.replaceChild(renderStatus(updated), root.firstChild);
+				root.replaceChild(renderStatus(updated, root), root.firstChild);
 			});
 		}, 5);
 

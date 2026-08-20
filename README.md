@@ -199,6 +199,40 @@ Then open LuCI:
 http://192.168.1.1/cgi-bin/luci/admin/services/safeshield
 ```
 
+## Management API architecture
+
+Starting with `luci-app-safeshield` 0.2.0, the LuCI application does not write
+SafeShield UCI state or `/etc/safeshield` rule files directly. The `safeshield`
+package owns configuration validation, lifecycle, license storage, local rule
+files, refresh scheduling, dnsmasq integration and DNS verification.
+
+LuCI consumes the public API exposed by SafeShield:
+
+```text
+safeshield.status
+safeshield.config
+safeshield.config_update
+safeshield.set_enabled
+safeshield.refresh
+safeshield.rules_list
+safeshield.rule_add
+safeshield.rule_delete
+safeshield.license_update
+```
+
+The Local Rules page uses SafeShield's fast local apply path. A normal rule edit
+reuses the cached normalized Hub artifact and only rebuilds local allow/block
+inputs, merges the active blocklist, restarts dnsmasq and verifies DNS. A full
+Hub refresh is used only when the cached artifact is unavailable.
+
+After installation, verify the API contract with:
+
+```sh
+ubus -v list safeshield
+```
+
+The LuCI ACL should not need direct UCI access to the `safeshield` package.
+
 ## Contributors
 
 <a href="https://github.com/Junatum/luci-app-safeshield/graphs/contributors">
