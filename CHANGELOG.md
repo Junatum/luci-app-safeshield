@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.2.0-r1
+## [0.2.1-r1] - 2026-08-29
+
+- Require SafeShield 0.3.13 or newer.
+
+## [0.2.0-r1] - 2026-08-20
 
 - Use the public `safeshield` ubus management API as the only SafeShield control plane.
 - Remove direct LuCI UCI writes for SafeShield lifecycle, license and configuration.
