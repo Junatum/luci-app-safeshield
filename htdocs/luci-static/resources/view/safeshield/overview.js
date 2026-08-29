@@ -231,6 +231,45 @@ function formatDuration(value) {
 	return parts.join(' ');
 }
 
+function translateValue(value) {
+	switch (String(value || '').toLowerCase()) {
+	case 'idle': return _('Idle');
+	case 'scheduled_wait': return _('Waiting for scheduled refresh');
+	case 'boot_delay': return _('Waiting after boot');
+	case 'local_apply': return _('Applying local rules');
+	case 'local_merge': return _('Merging local rules');
+	case 'local_restart_dnsmasq': return _('Restarting DNS service');
+	case 'local_runtime_check': return _('Checking DNS service');
+	case 'local_blocklist_verify': return _('Verifying blocklist');
+	case 'ok': return _('OK');
+	case 'ready': return _('Ready');
+	case 'success': return _('Success');
+	case 'active': return _('Active');
+	case 'running': return _('Running');
+	case 'refreshing': return _('Refreshing');
+	case 'pending': return _('Pending');
+	case 'notice': return _('Notice');
+	case 'warning': return _('Warning');
+	case 'degraded': return _('Degraded');
+	case 'disabled': return _('Disabled');
+	case 'error': return _('Error');
+	case 'failed': return _('Failed');
+	case 'failure': return _('Failure');
+	case 'expired': return _('Expired');
+	case 'revoked': return _('Revoked');
+	case 'suspended': return _('Suspended');
+	case 'free': return _('Free');
+	case 'unlicensed': return _('Unlicensed');
+	case 'licensed': return _('Licensed');
+	case 'light': return _('Light');
+	case 'standard': return _('Standard');
+	case 'full': return _('Full');
+	case 'block': return _('Block');
+	case 'allow': return _('Allow');
+	default: return value;
+	}
+}
+
 function badgeClass(value) {
 	switch (String(value || '').toLowerCase()) {
 	case 'ok':
@@ -269,7 +308,7 @@ function badgeClass(value) {
 
 function badge(value, fallback) {
 	var text = asText(value, fallback || '-');
-	return E('span', { 'class': badgeClass(text) }, [ text ]);
+	return E('span', { 'class': badgeClass(text), 'style': 'padding: 0' }, [ translateValue(text) ]);
 }
 
 function row(label, value) {
@@ -331,10 +370,10 @@ function renderSummary(summary) {
 		return '-';
 
 	if (typeof summary === 'string')
-		return summary;
+		return translateValue(summary);
 
 	return [
-		E('span', { 'class': badgeClass(summary.severity || summary.label) }, [ asText(summary.label, '-') ]),
+		E('span', { 'class': badgeClass(summary.severity || summary.label), 'style': 'padding: 0' }, [ translateValue(asText(summary.label, '-')) ]),
 		' ',
 		asText(summary.message, '-')
 	];
@@ -348,16 +387,17 @@ function renderSources(sources) {
 		body = [ E('tr', {}, [ E('td', { 'colspan': 8 }, [ _('No sources reported by SafeShield.') ]) ]) ];
 	}
 	else {
+		var cstyle = { 'style': 'text-align:center' };
 		body = items.map(function(item) {
 			return E('tr', {}, [
-				E('td', {}, [ asText(item.name || item.id) ]),
-				E('td', {}, [ asText(item.action || sources.mode) ]),
-				E('td', {}, [ formatBool(item.enabled) ]),
-				E('td', {}, [ badge(item.last_result) ]),
-				E('td', {}, [ formatNumber(item.line_count) ]),
-				E('td', {}, [ formatSizeKb(item.size_kb) ]),
-				E('td', {}, [ asText(item.artifact_tier) ]),
-				E('td', {}, [ asText(item.artifact_version) ])
+				E('td', cstyle, [ asText(item.name || item.id) ]),
+				E('td', cstyle, [ translateValue(asText(item.action || sources.mode)) ]),
+				E('td', cstyle, [ formatBool(item.enabled) ]),
+				E('td', cstyle, [ badge(item.last_result) ]),
+				E('td', cstyle, [ formatNumber(item.line_count) ]),
+				E('td', cstyle, [ formatSizeKb(item.size_kb) ]),
+				E('td', cstyle, [ translateValue(asText(item.artifact_tier)) ]),
+				E('td', cstyle, [ asText(item.artifact_version) ])
 			]);
 		});
 	}
@@ -453,7 +493,7 @@ function renderStatus(data, root) {
 		section(_('License'), [
 			row(_('Configured'), formatBool(license.configured)),
 			row(_('Masked key'), license.key_masked),
-			row(_('Plan'), license.plan),
+			row(_('Plan'), translateValue(asText(license.plan))),
 			row(_('Status'), badge(license.status))
 		]),
 
@@ -469,7 +509,7 @@ function renderStatus(data, root) {
 
 		section(_('Hub artifact'), [
 			row(_('Resolved'), formatBool(artifact.resolved)),
-			row(_('Tier'), artifact.tier),
+			row(_('Tier'), translateValue(asText(artifact.tier))),
 			row(_('Version'), artifact.version),
 			row(_('SHA-256'), formatHash(artifact.sha256)),
 			row(_('Unique domains'), formatNumber(artifact.unique_domains)),
