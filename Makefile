@@ -16,7 +16,7 @@ LUCI_TITLE:=SafeShield Web UI
 LUCI_URL:=https://github.com/Junatum/luci-app-safeshield
 LUCI_DESCRIPTION:=SafeShield Web UI for OpenWrt
 LUCI_DEPENDS:=+luci-base +rpcd +ucode +safeshield
-EXTRA_DEPENDS:=safeshield (>=0.3.17)
+LUCI_EXTRA_DEPENDS:=safeshield (>=0.3.17)
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
