@@ -436,6 +436,27 @@ msgstr ""
 msgid "SafeShield is enabled and running."
 msgstr ""
 
+msgid "SafeShield is idle."
+msgstr ""
+
+msgid "SafeShield is ready."
+msgstr ""
+
+msgid "SafeShield is refreshing the blocklist."
+msgstr ""
+
+msgid "SafeShield is running with degraded protection."
+msgstr ""
+
+msgid "SafeShield encountered an error."
+msgstr ""
+
+msgid "SafeShield is paused."
+msgstr ""
+
+msgid "SafeShield is disabled."
+msgstr ""
+
 msgid "SafeShield local rules"
 msgstr ""
 

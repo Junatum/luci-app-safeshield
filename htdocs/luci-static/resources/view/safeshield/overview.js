@@ -24,6 +24,16 @@ var callRefresh = rpc.declare({
 	expect: { }
 });
 
+const SUMMARY_MESSAGES = {
+	idle: _('SafeShield is idle.'),
+	ready: _('SafeShield is ready.'),
+	refreshing: _('SafeShield is refreshing the blocklist.'),
+	degraded: _('SafeShield is running with degraded protection.'),
+	error: _('SafeShield encountered an error.'),
+	paused: _('SafeShield is paused.'),
+	disabled: _('SafeShield is disabled.')
+};
+
 
 function apiError(response, fallback) {
 	if (response && response.error) {
@@ -365,6 +375,12 @@ function renderMessages(title, items, className) {
 	]);
 }
 
+function summaryMessage(summary) {
+	var code = String((summary && summary.code) || '').toLowerCase();
+
+	return SUMMARY_MESSAGES[code] || asText(summary && summary.message, '-');
+}
+
 function renderSummary(summary) {
 	if (!summary)
 		return '-';
@@ -375,7 +391,7 @@ function renderSummary(summary) {
 	return [
 		E('span', { 'class': badgeClass(summary.severity || summary.label), 'style': 'padding: 0' }, [ translateValue(asText(summary.label, '-')) ]),
 		' ',
-		asText(summary.message, '-')
+		summaryMessage(summary)
 	];
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1-r2] - 2026-08-30
+
+- Localize all current SafeShield `summary.code` states in LuCI (`idle`, `ready`, `refreshing`, `degraded`, `error`, `paused`, and `disabled`).
+- Fall back to the backend `summary.message` for unknown summary codes.
+- Require SafeShield 0.3.14-r8 or newer for summary code support.
+
 ## [0.2.1-r1] - 2026-08-29
 
 - Require SafeShield 0.3.13 or newer.

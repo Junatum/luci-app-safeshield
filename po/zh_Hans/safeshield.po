@@ -437,6 +437,27 @@ msgstr "SafeShield 已禁用并停止。"
 msgid "SafeShield is enabled and running."
 msgstr "SafeShield 已启用并运行中。"
 
+msgid "SafeShield is idle."
+msgstr "SafeShield 处于空闲状态。"
+
+msgid "SafeShield is ready."
+msgstr "SafeShield 已就绪。"
+
+msgid "SafeShield is refreshing the blocklist."
+msgstr "SafeShield 正在刷新拦截列表。"
+
+msgid "SafeShield is running with degraded protection."
+msgstr "SafeShield 正在降级保护状态下运行。"
+
+msgid "SafeShield encountered an error."
+msgstr "SafeShield 遇到错误。"
+
+msgid "SafeShield is paused."
+msgstr "SafeShield 已暂停。"
+
+msgid "SafeShield is disabled."
+msgstr "SafeShield 已禁用。"
+
 msgid "SafeShield local rules"
 msgstr "SafeShield 本地规则"
 
