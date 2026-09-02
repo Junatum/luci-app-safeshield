@@ -7,7 +7,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-safeshield
 PKG_VERSION:=0.2.2
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_MAINTAINER:=Beomjun Kang <kals323@gmail.com>
@@ -16,7 +16,7 @@ LUCI_TITLE:=SafeShield Web UI
 LUCI_URL:=https://github.com/Junatum/luci-app-safeshield
 LUCI_DESCRIPTION:=SafeShield Web UI for OpenWrt
 LUCI_DEPENDS:=+luci-base +rpcd +ucode +safeshield
-LUCI_EXTRA_DEPENDS:=safeshield (>=0.3.17)
+LUCI_EXTRA_DEPENDS:=safeshield (>=0.3.19)
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

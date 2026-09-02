@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.2-r3] - 2026-09-02
+
+- Require SafeShield 0.3.19 or newer.
+
 ## [0.2.2-r2] - 2026-08-30
 
 - Require SafeShield 0.3.17 or newer.
